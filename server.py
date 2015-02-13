@@ -2,16 +2,6 @@
 
 import socket               # Import socket module
 
-def check_request(data):
-  if "GET" in data:
-    data = find_part_tp_file(data)
-  elif "DELETE" in data:
-    data = find_part_tp_file(data)
-  elif "HEAD" in data:
-    print "HEAD"
-
-  return data
-
 def find_part_to_file(data):
   temp_start = 0
   temp_end = data.find("HTTP")
@@ -24,7 +14,16 @@ def find_part_to_file(data):
   data = data[temp_start:temp_end]
   return data
 
+def check_request(data):
+  if "GET" in data:
+    data = find_part_tp_file(data)
+  elif "DELETE" in data:
+    data = find_part_tp_file(data)
+  elif "HEAD" in data:
+    print "HEAD"
 
+  return data
+#------------------------------------------------------------
 s = socket.socket()         # Create a socket object
 host = socket.gethostname() # Get local machine name
 port = 80                # Reserve a port for your service.
