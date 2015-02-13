@@ -21,11 +21,11 @@ def get_file(data):
     files = [f for f in os.listdir(os.getcwd()) if os.path.isfile(f)]
     for f in files:
       if f[0] != ".":
-        temp += f
+        temp.extend(f)
 
 
   return create_html_list(temp)
-  
+
 def part_to_file(data):
   temp_start = 0
   temp_end = data.find("HTTP")
