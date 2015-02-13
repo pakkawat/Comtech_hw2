@@ -19,9 +19,7 @@ def get_file(data):
   temp = []
   if len(data) == 2:
     files = [f for f in os.listdir(os.getcwd()) if os.path.isfile(f)]
-    for f in files:
-      if f[0] != ".":
-        temp.extend(f)
+    temp = files
 
 
   return create_html_list(temp)
