@@ -10,7 +10,7 @@ Content-Type:text/html
 <h1>Directory listing for / </h1><hr><ul>"""
   for f in data:
     if f[0] != ".":
-      temp += "<li><a href='http://" + socket.gethostname() + "cloudapp.net/" + f + "'>" + f + "</a></li>"
+      temp += "<li><a href='http://" + socket.gethostname() + ".cloudapp.net/" + f + "'>" + f + "</a></li>"
 
   temp += "</ul><hr>"
   return temp
