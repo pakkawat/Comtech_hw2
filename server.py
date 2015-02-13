@@ -16,9 +16,9 @@ def find_part_to_file(data):
 
 def check_request(data):
   if "GET" in data:
-    data = find_part_tp_file(data)
+    data = find_part_to_file(data)
   elif "DELETE" in data:
-    data = find_part_tp_file(data)
+    data = find_part_to_file(data)
   elif "HEAD" in data:
     print "HEAD"
 
