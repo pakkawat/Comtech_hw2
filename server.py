@@ -9,7 +9,8 @@ Content-Type:text/html
 
 <h1>Directory listing for / </h1><hr><ul>"""
   for f in data:
-    temp += "<li>" + f + "</li>"
+    if f[0] != ".":
+      temp += "<li>" + f + "</li>"
 
   temp += "</ul><hr>"
   return temp
