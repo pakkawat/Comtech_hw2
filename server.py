@@ -1,12 +1,15 @@
 #!/usr/bin/python
 
 import socket               # Import socket module
+import os
+
 def get_file(data):
   temp = ""
   if len(data) == 1:
-    files = [f for f in os.listdir('.') if os.path.isfile(f)]
+    files = [f for f in os.listdir(os.getcwd()) if os.path.isfile(f)]
     for f in files:
-      temp = temp + f + "--"
+      if f[0] != ".":
+        temp = temp + f + "--"
 
   return temp
 def part_to_file(data):
