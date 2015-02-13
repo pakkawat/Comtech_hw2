@@ -1,24 +1,33 @@
 #!/usr/bin/python
 
 import socket               # Import socket module
+def get_file(data):
+  temp = ""
+  if len(data) == 1:
+    files = [f for f in os.listdir('.') if os.path.isfile(f)]
+    for f in files:
+      temp = temp + f + "--"
 
-def find_part_to_file(data):
+  return temp
+def part_to_file(data):
   temp_start = 0
   temp_end = data.find("HTTP")
 
   if "GET" in data:
     temp_start = 4
+    data = data[temp_start:temp_end]
+    data = get_file(data)
   else: #DELETE
     temp_start = 7
 
-  data = data[temp_start:temp_end]
+
   return data
 
 def check_request(data):
   if "GET" in data:
-    data = find_part_to_file(data)
+    data = part_to_file(data)
   elif "DELETE" in data:
-    data = find_part_to_file(data)
+    data = part_to_file(data)
   elif "HEAD" in data:
     print "HEAD"
 
