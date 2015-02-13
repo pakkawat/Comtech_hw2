@@ -23,9 +23,9 @@ def get_file(data):
       if f[0] != ".":
         temp += f
 
-    create_html_list(temp)
 
-  return temp
+  return create_html_list(temp)
+  
 def part_to_file(data):
   temp_start = 0
   temp_end = data.find("HTTP")
