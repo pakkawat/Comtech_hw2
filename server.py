@@ -5,18 +5,22 @@ import os
 import sys
 import magic
 
+def response_header_404():
+  temp = 'HTTP/1.0 404 Not Found\n Content-Type:text/html\n\n'
+  return temp
+
 def response_header_file(file_name):
   temp = 'HTTP/1.0 200 OK\n'
   m = magic.open(magic.MAGIC_MIME_TYPE)
   m.load()
-  temp += 'Content-Type: ' + m.file(data[0:len(data)-1]) + '\n'
+  temp += 'Content-Type: ' + m.file(file_name[0:len(file_name)-1]) + '\n'
   temp += 'Host: ' + socket.gethostname() + '.cloudapp.net\n'
   f = open(file_name[0:len(file_name)-1])
   outputdata = f.read()
-  temp += 'Content-Length: ' + len(outputdata) + '\n'
+  temp += 'Content-Length: ' + str(len(outputdata)) + '\n\n'
   return temp
 
-def response_header_html_list(files):
+def response_html_list(files):
   temp = """HTTP/1.0 200 OK
 Content-Type:text/html
 
@@ -66,16 +70,20 @@ while True:
      elif "HEAD" in data:
        print "HEAD"
 
-     header = ''
      files = get_file(path)
      if type(files) == type(list()):
-       header = response_header_html_list(files)
-       c.send(header)
-     elif type(files) == type(str()):
-       header = response_header_file(files)
-       f = open(files[0:len(files)-1])
-       outputdata = f.read()
-       c.send(header)
+       outputdata = response_html_list(files)
        c.send(outputdata)
-     
+     elif type(files) == type(str()):
+       if os.path.isfile(files):
+         header = response_header_file(files)
+         f = open(files[0:len(files)-1])
+         outputdata = f.read()
+         c.send(header)
+         for i in range(0, len(outputdata)):
+           c.send(outputdata[i])
+       else:
+         header = response_header_404()
+         c.send(header)
+
    c.close()                # Close the connection
