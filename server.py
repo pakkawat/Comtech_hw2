@@ -6,8 +6,13 @@ import sys
 import magic
 
 def response_header_404():
-  temp = 'HTTP/1.0 404 Not Found\nContent-Type:text/html\n\n'
-  return temp
+  return 'HTTP/1.0 404 Not Found\nContent-Type:text/html\n\n'
+
+def response_header_200():
+  return 'HTTP/1.0 200 OK\nContent-Type:text/html\n\n'
+
+def response_html_404():
+  return 'HTTP/1.0 404 Not Found\nContent-Type:text/html\n\n'
 
 def response_header_file(file_name):
   temp = 'HTTP/1.0 200 OK\n'
@@ -49,6 +54,17 @@ def part_to_file(data,start):
 
   return data
 
+def head_request(c,data):
+  path = part_to_file(data,5)
+  files = get_file(path)
+  if type(files) == type(list()):
+    c.send(response_header_200)
+  elif type(files) == type(str()):
+    if os.path.isfile(files[0:len(files)-1]):
+      c.send(response_header_200)
+    else:
+      c.send(response_header_404)
+
 def get_request(c,data):
   path = part_to_file(data,4)
   files = get_file(path)
@@ -64,7 +80,7 @@ def get_request(c,data):
       for i in range(0, len(outputdata)):
         c.send(outputdata[i])
     else:
-      header = response_header_404()
+      header = response_html_404()
       c.send(header)
 
 #------------------------------------------------------------
