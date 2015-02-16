@@ -4,15 +4,22 @@ import socket               # Import socket module
 import os
 import sys
 import magic
+import time
+
+
+def write_log(txt):
+  f = open('comtech.txt','w')
+  f.write(txt)
+  f.close()
 
 def http_bad_request():
   return 'HTTP/1.0 400 Bad Request\nContent-Type:text/html\n\n<h1>HTTP 400 Bad Request</h1>'
 
 def response_header_202():
-  return 'HTTP/1.0 202 Accept\nContent-Type:text/html\n\n<h1>HTTP 202 Accept</h1>'
+  return 'HTTP/1.0 202 Accept File Not Found\nContent-Type:text/html\n\n'
 
 def response_header_204():
-  return 'HTTP/1.0 204 No Content\nContent-Type:text/html\n\n<h1>HTTP 204 No Content</h1>'
+  return 'HTTP/1.0 204 No Content\nContent-Type:text/html\n\n'
 
 def response_header_404():
   return 'HTTP/1.0 404 Not Found\nContent-Type:text/html\n\n'
@@ -103,6 +110,8 @@ def get_request(c,data):
       c.send(header)
 
 #------------------------------------------------------------
+os.environ['TZ'] = 'Asia/Bangkok'
+time.tzset()
 s = socket.socket()         # Create a socket object
 host = socket.gethostname() # Get local machine name
 port = int(sys.argv[1])             # Reserve a port for your service.
@@ -115,6 +124,8 @@ while True:
 
    data = c.recv(1024)
    if not "favicon.ico" in data:
+     end = data.find("HTTP")
+     write_log(addr + '-' + str(time.strftime('%d/%m/%Y[%X]')) + '-' + data[0:end+8] + '\n')
      if "GET" in data:
        get_request(c,data)
      elif "DELETE" in data:
