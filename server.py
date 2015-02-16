@@ -6,7 +6,7 @@ import sys
 import magic
 
 def response_header_404():
-  temp = 'HTTP/1.0 404 Not Found\n Content-Type:text/html\n\n'
+  temp = 'HTTP/1.0 404 Not Found\nContent-Type:text/html\n\n'
   return temp
 
 def response_header_file(file_name):
@@ -49,6 +49,23 @@ def part_to_file(data,start):
 
   return data
 
+def get_request(c,data):
+  path = part_to_file(data,4)
+  files = get_file(path)
+  if type(files) == type(list()):
+    outputdata = response_html_list(files)
+    c.send(outputdata)
+  elif type(files) == type(str()):
+    if os.path.isfile(files[0:len(files)-1]):
+      header = response_header_file(files)
+      f = open(files[0:len(files)-1])
+      outputdata = f.read()
+      c.send(header)
+      for i in range(0, len(outputdata)):
+        c.send(outputdata[i])
+    else:
+      header = response_header_404()
+      c.send(header)
 
 #------------------------------------------------------------
 s = socket.socket()         # Create a socket object
@@ -64,26 +81,12 @@ while True:
    data = c.recv(1024)
    if not "favicon.ico" in data:
      if "GET" in data:
-       path = part_to_file(data,4)
+       get_request(c,data)
      elif "DELETE" in data:
        path = part_to_file(data,7)
      elif "HEAD" in data:
        print "HEAD"
 
-     files = get_file(path)
-     if type(files) == type(list()):
-       outputdata = response_html_list(files)
-       c.send(outputdata)
-     elif type(files) == type(str()):
-       if os.path.isfile(files):
-         header = response_header_file(files)
-         f = open(files[0:len(files)-1])
-         outputdata = f.read()
-         c.send(header)
-         for i in range(0, len(outputdata)):
-           c.send(outputdata[i])
-       else:
-         header = response_header_404()
-         c.send(header)
+
 
    c.close()                # Close the connection
