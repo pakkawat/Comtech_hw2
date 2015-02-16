@@ -5,6 +5,15 @@ import os
 import sys
 import magic
 
+def http_bad_request():
+  return 'HTTP/1.0 400 Bad Request\nContent-Type:text/html\n\n<h1>HTTP 400 Bad Request</h1>'
+
+def response_header_202():
+  return 'HTTP/1.0 202 Accept\nContent-Type:text/html\n\n<h1>HTTP 202 Accept</h1>'
+
+def response_header_204():
+  return 'HTTP/1.0 204 No Content\nContent-Type:text/html\n\n<h1>HTTP 204 No Content</h1>'
+
 def response_header_404():
   return 'HTTP/1.0 404 Not Found\nContent-Type:text/html\n\n'
 
@@ -24,6 +33,7 @@ def response_header_file(file_name):
   outputdata = f.read()
   temp += 'Content-Length: ' + str(len(outputdata)) + '\n\n'
   return temp
+
 
 def response_html_list(files):
   temp = """HTTP/1.0 200 OK
@@ -47,23 +57,32 @@ def get_file(path):
     return path
 
 
-
 def part_to_file(data,start):
   end = data.find("HTTP")
   data = data[start:end]
-
   return data
+
+def delete_request(c,data):
+  path = part_to_file(data,7)
+  files = get_file(path)
+  if type(files) == type(str()):
+    if os.path.isfile(files[0:len(files)-1]):
+      os.remove(files[0:len(files)-1])
+      c.send(response_header_204())
+    else:
+      c.send(response_header_202())
 
 def head_request(c,data):
   path = part_to_file(data,5)
   files = get_file(path)
   if type(files) == type(list()):
-    c.send(response_header_200)
+    c.send(response_header_200())
   elif type(files) == type(str()):
     if os.path.isfile(files[0:len(files)-1]):
-      c.send(response_header_200)
+      c.send(response_header_200())
     else:
-      c.send(response_header_404)
+      c.send(response_header_404())
+
 
 def get_request(c,data):
   path = part_to_file(data,4)
@@ -92,16 +111,18 @@ s.bind((host, port))        # Bind to the port
 s.listen(5)                 # Now wait for client connection.
 while True:
    c, addr = s.accept()     # Establish connection with client.
-   print 'Got connection from', addr
+   #print 'Got connection from', addr
 
    data = c.recv(1024)
    if not "favicon.ico" in data:
      if "GET" in data:
        get_request(c,data)
      elif "DELETE" in data:
-       path = part_to_file(data,7)
+       delete_request(c,data)
      elif "HEAD" in data:
-       print "HEAD"
+       head_request(c,data)
+     else:
+       c.send(http_bad_request())
 
 
 
