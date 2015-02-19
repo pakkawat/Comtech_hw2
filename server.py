@@ -6,31 +6,46 @@ import sys
 import magic
 import time
 
+addr_global = ''
 
 def write_log(txt):
-  f = open('comtech.txt','w')
+  f = open('comtech.txt','a')
   f.write(txt)
   f.close()
 
 def http_bad_request():
+  global addr_global
+  write_log(addr_global + ' - ' + str(time.strftime('%d/%m/%Y[%X]')) + ' - 400 Bad Request\n')
   return 'HTTP/1.0 400 Bad Request\nContent-Type:text/html\n\n<h1>HTTP 400 Bad Request</h1>'
 
 def response_header_202():
+  global addr_global
+  write_log(addr_global + ' - ' + str(time.strftime('%d/%m/%Y[%X]')) + ' - 202 Accept File Not Found\n')
   return 'HTTP/1.0 202 Accept File Not Found\nContent-Type:text/html\n\n'
 
 def response_header_204():
+  global addr_global
+  write_log(addr_global + ' - ' + str(time.strftime('%d/%m/%Y[%X]')) + ' - 204 No Content\n')
   return 'HTTP/1.0 204 No Content\nContent-Type:text/html\n\n'
 
 def response_header_404():
+  global addr_global
+  write_log(addr_global + ' - ' + str(time.strftime('%d/%m/%Y[%X]')) + ' - 404 Not Found\n')
   return 'HTTP/1.0 404 Not Found\nContent-Type:text/html\n\n'
 
 def response_header_200():
+  global addr_global
+  write_log(addr_global + ' - ' + str(time.strftime('%d/%m/%Y[%X]')) + ' - 200 OK\n')
   return 'HTTP/1.0 200 OK\nContent-Type:text/html\n\n'
 
 def response_html_404():
+  global addr_global
+  write_log(addr_global + ' - ' + str(time.strftime('%d/%m/%Y[%X]')) + ' - 404 Not Found\n')
   return 'HTTP/1.0 404 Not Found\nContent-Type:text/html\n\n'
 
 def response_header_file(file_name):
+  global addr_global
+  write_log(addr_global + ' - ' + str(time.strftime('%d/%m/%Y[%X]')) + ' - 200 OK\n')
   temp = 'HTTP/1.0 200 OK\n'
   m = magic.open(magic.MAGIC_MIME_TYPE)
   m.load()
@@ -43,6 +58,8 @@ def response_header_file(file_name):
 
 
 def response_html_list(files):
+  global addr_global
+  write_log(addr_global + ' - ' + str(time.strftime('%d/%m/%Y[%X]')) + ' - 200 OK\n')
   temp = """HTTP/1.0 200 OK
 Content-Type:text/html
 
@@ -121,11 +138,11 @@ s.listen(5)                 # Now wait for client connection.
 while True:
    c, addr = s.accept()     # Establish connection with client.
    #print 'Got connection from', addr
-
+   addr_global = addr[0]
    data = c.recv(1024)
-   if not "favicon.ico" in data:
+   if not "favicon.ico" in data and data.strip() != '':
      end = data.find("HTTP")
-     write_log(addr + '-' + str(time.strftime('%d/%m/%Y[%X]')) + '-' + data[0:end+8] + '\n')
+     write_log(str(addr[0]) + ' - ' + str(time.strftime('%d/%m/%Y[%X]')) + ' - ' + data[0:end+8] + '\n')
      if "GET" in data:
        get_request(c,data)
      elif "DELETE" in data:
