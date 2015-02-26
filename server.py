@@ -41,7 +41,10 @@ def response_header_200():
 def response_html_404():
   global addr_global
   write_log(addr_global + ' - ' + str(time.strftime('%d/%m/%Y[%X]')) + ' - 404 Not Found\n')
-  return 'HTTP/1.0 404 Not Found\nContent-Type:text/html\n\n'
+  return ('HTTP/1.0 404 Not Found\nContent-Type:text/html\n\n'+
+  '<hr><h1>HTTP Error 404</h1><h2>404 Not Found</h2>'+
+  'The Web server cannot find the file or script you asked for. Please check the URL to ensure that the path is correct.<br>'+
+  'Please contact the server\'s administrator if this problem persists.')
 
 def response_header_file(file_name):
   global addr_global
@@ -89,6 +92,9 @@ def part_to_file(data,start):
 def delete_request(c,data):
   path = part_to_file(data,7)
   files = get_file(path)
+  msg = ""
+  while not "\n\n" in msg:
+    msg += c.recv(1024)
   if type(files) == type(str()):
     if os.path.isfile(files[0:len(files)-1]):
       os.remove(files[0:len(files)-1])
@@ -99,6 +105,9 @@ def delete_request(c,data):
 def head_request(c,data):
   path = part_to_file(data,5)
   files = get_file(path)
+  msg = ""
+  while not "\n\n" in msg:
+    msg += c.recv(1024)
   if type(files) == type(list()):
     c.send(response_header_200())
   elif type(files) == type(str()):
