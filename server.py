@@ -16,7 +16,7 @@ def write_log(txt):
 def http_bad_request():
   global addr_global
   write_log(addr_global + ' - ' + str(time.strftime('%d/%m/%Y[%X]')) + ' - 400 Bad Request\n')
-  return 'HTTP/1.0 400 Bad Request\nContent-Type:text/html\n\n<h1>HTTP 400 Bad Request</h1>'
+  return 'HTTP/1.0 400 Bad Request\nContent-Type:text/html\n\n'
 
 def response_header_202():
   global addr_global
@@ -36,7 +36,7 @@ def response_header_404():
 def response_header_200():
   global addr_global
   write_log(addr_global + ' - ' + str(time.strftime('%d/%m/%Y[%X]')) + ' - 200 OK\n')
-  return 'HTTP/1.0 200 OK\nContent-Type:text/html\n\n'
+  return 'HTTP/1.0 200 OK\nDate: ' + str(time.strftime('%a, %d %b %Y %X')) + '\nContent-Type:text/html\n\n'
 
 def response_html_404():
   global addr_global
@@ -159,6 +159,9 @@ while True:
      elif "HEAD" in data:
        head_request(c,data)
      else:
+       msg = ""
+       while not "\n\n" in msg:
+         msg += c.recv(1024)
        c.send(http_bad_request())
 
 
